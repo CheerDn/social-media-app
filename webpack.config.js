@@ -71,7 +71,9 @@ if (currentTask == "dev") {
     contentBase: path.join(__dirname, "app"),
     hot: true,
     port: 3000,
-    host: "0.0.0.0"
+    host: "0.0.0.0",
+    historyApiFallback: { index: "index.html" },
+    historyApiFallback: true
   }
   config.mode = "development"
 }

@@ -8,6 +8,7 @@ import { BrowserRouter, Switch, Route } from "react-router-dom"
 import Header from "./components/Header"
 import HomeGuest from "./components/HomeGuest"
 import Home from "./components/Home"
+import CreatePost from "./components/CreatePost"
 import Footer from "./components/Footer"
 import About from "./components/About"
 import Terms from "./components/Terms"
@@ -21,6 +22,9 @@ function ExampleComponent() {
       <Switch>
         <Route path="/" exact>
           {loggedIn ? <Home /> : <HomeGuest />}
+        </Route>
+        <Route path="/create-post">
+          <CreatePost />
         </Route>
         <Route path="/about-us" exact>
           <About />
