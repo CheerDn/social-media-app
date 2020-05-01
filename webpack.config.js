@@ -50,7 +50,7 @@ let config = {
         use: {
           loader: "babel-loader",
           options: {
-            presets: ["@babel/preset-react", "@babel/preset-env"]
+            presets: ["@babel/preset-react", ["@babel/preset-env", { targets: { node: "12" } }]]
           }
         }
       } // end of babel rule
@@ -71,11 +71,8 @@ if (currentTask == "dev") {
     contentBase: path.join(__dirname, "app"),
     hot: true,
     port: 3000,
-    host: "0.0.0.0",
-    historyApiFallback: { index: "index.html" },
-    historyApiFallback: true
+    host: "0.0.0.0"
   }
-
   config.mode = "development"
 }
 if (currentTask == "build") {
