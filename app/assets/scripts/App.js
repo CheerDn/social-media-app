@@ -15,19 +15,28 @@ import Footer from "./components/Footer"
 import About from "./components/About"
 import Terms from "./components/Terms"
 import ViewSinglePost from "./components/ViewSinglePost"
+import FlashMessages from "./components/FlashMessages"
 
-function ExampleComponent() {
+function App() {
+  // check if user have sign in before
   const [loggedIn, setLoggedIn] = useState(Boolean(localStorage.getItem("socialmediaappToken")))
+  // initial state with empty string
+  const [flashMessages, setFlashMessages] = useState([])
+
+  function addFlashMessage(msg) {
+    setFlashMessages(prev => prev.concat(msg))
+  }
 
   return (
     <BrowserRouter>
+      <FlashMessages messages={flashMessages} />
       <Header loggedIn={loggedIn} setLoggedIn={setLoggedIn} />
       <Switch>
         <Route path="/" exact>
           {loggedIn ? <Home /> : <HomeGuest />}
         </Route>
         <Route path="/create-post">
-          <CreatePost />
+          <CreatePost addFlashMessage={addFlashMessage} />
         </Route>
         <Route path="/post/:id">
           <ViewSinglePost />
@@ -44,7 +53,7 @@ function ExampleComponent() {
   )
 }
 
-ReactDOM.render(<ExampleComponent />, document.querySelector("#app"))
+ReactDOM.render(<App />, document.querySelector("#app"))
 
 //hot module replacement for devServer
 if (module.hot) {

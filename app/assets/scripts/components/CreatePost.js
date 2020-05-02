@@ -3,15 +3,15 @@ import Page from "./Page"
 import Axios from "axios"
 import { Redirect } from "react-router-dom"
 
-function CreatePost() {
+function CreatePost(props) {
   const [title, setTitle] = useState()
   const [body, setBody] = useState()
   const [wasSuccessful, setwasSuccessful] = useState(false)
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault()
     try {
-      const response = Axios.post("/create-post", { title, body, token: localStorage.getItem("socialmediaappToken") })
+      const response = await Axios.post("/create-post", { title, body, token: localStorage.getItem("socialmediaappToken") })
       setwasSuccessful(response.data)
     } catch (e) {
       console.log(e)
@@ -19,6 +19,7 @@ function CreatePost() {
   }
 
   if (wasSuccessful) {
+    props.addFlashMessage("Congrats, you successfully created a post.")
     return <Redirect to={`/post/${wasSuccessful}`} />
   }
 
