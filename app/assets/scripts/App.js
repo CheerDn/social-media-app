@@ -14,6 +14,7 @@ import CreatePost from "./components/CreatePost"
 import Footer from "./components/Footer"
 import About from "./components/About"
 import Terms from "./components/Terms"
+import ViewSinglePost from "./components/ViewSinglePost"
 
 function ExampleComponent() {
   const [loggedIn, setLoggedIn] = useState(Boolean(localStorage.getItem("socialmediaappToken")))
@@ -27,6 +28,9 @@ function ExampleComponent() {
         </Route>
         <Route path="/create-post">
           <CreatePost />
+        </Route>
+        <Route path="/post/:id">
+          <ViewSinglePost />
         </Route>
         <Route path="/about-us" exact>
           <About />

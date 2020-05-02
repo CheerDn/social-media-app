@@ -61,9 +61,10 @@ let config = {
 if (currentTask == "dev") {
   cssConfig.use.unshift("style-loader")
   config.output = {
+    publicPath: "/",
     filename: "bundled.js",
     path: path.resolve(__dirname, "app")
-  }
+  } //need to specify public path so that /post/:id can find bundled.js
   config.devServer = {
     before: function (app, server) {
       server._watch("./app/**/*.html")
