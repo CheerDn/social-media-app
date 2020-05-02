@@ -1,18 +1,25 @@
 import React, { useEffect, useState } from "react"
 import Page from "./Page"
 import Axios from "axios"
+import { Redirect } from "react-router-dom"
 
 function CreatePost() {
   const [title, setTitle] = useState()
   const [body, setBody] = useState()
+  const [wasSuccessful, setwasSuccessful] = useState(false)
 
   function handleSubmit(e) {
     e.preventDefault()
     try {
-      Axios.post("/create-post", { title, body, token: localStorage.getItem("socialmediaappToken") })
+      const response = Axios.post("/create-post", { title, body, token: localStorage.getItem("socialmediaappToken") })
+      setwasSuccessful(response.data)
     } catch (e) {
       console.log(e)
     }
+  }
+
+  if (wasSuccessful) {
+    return <Redirect to={`/post/${wasSuccessful}`} />
   }
 
   return (
