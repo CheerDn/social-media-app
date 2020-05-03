@@ -1,12 +1,15 @@
 import "../styles/styles.css"
 
-import React, { useState } from "react"
+import React, { useState, useReducer, useEffect } from "react"
 import ReactDOM from "react-dom"
+import { useImmerReducer } from "use-immer"
 import { BrowserRouter, Switch, Route } from "react-router-dom"
 import Axios from "axios"
 Axios.defaults.baseURL = "http://localhost:8080"
 
-//Import React components
+import StateContext from "./StateContext"
+import DispatchContext from "./DispatchContext"
+
 import Header from "./components/Header"
 import HomeGuest from "./components/HomeGuest"
 import Home from "./components/Home"
@@ -18,38 +21,72 @@ import ViewSinglePost from "./components/ViewSinglePost"
 import FlashMessages from "./components/FlashMessages"
 
 function App() {
-  // check if user have sign in before
-  const [loggedIn, setLoggedIn] = useState(Boolean(localStorage.getItem("socialmediaappToken")))
-  // initial state with empty string
-  const [flashMessages, setFlashMessages] = useState([])
-
-  function addFlashMessage(msg) {
-    setFlashMessages(prev => prev.concat(msg))
+  const initialState = {
+    loggedIn: Boolean(localStorage.getItem("socialmediaappToken")),
+    flashMessages: [],
+    user: {
+      token: localStorage.getItem("socialmediaappToken"),
+      username: localStorage.getItem("socialmediaappUsername"),
+      avatar: localStorage.getItem("socialmediaappAvatar")
+    }
   }
 
+  function ourReducer(draft, action) {
+    switch (action.type) {
+      case "login":
+        draft.loggedIn = true
+        draft.user = action.data
+        return
+      case "logout":
+        draft.loggedIn = false
+        return
+      case "flashMessage":
+        draft.flashMessages.push(action.value)
+        return
+    }
+  }
+
+  const [state, dispatch] = useImmerReducer(ourReducer, initialState)
+
+  useEffect(() => {
+    if (state.loggedIn) {
+      localStorage.setItem("socialmediaappToken", state.user.token)
+      localStorage.setItem("socialmediaappUsername", state.user.username)
+      localStorage.setItem("socialmediaappAvatar", state.user.avatar)
+    } else {
+      localStorage.removeItem("socialmediaappToken")
+      localStorage.removeItem("socialmediaappUsername")
+      localStorage.removeItem("socialmediaappAvatar")
+    }
+  }, [state.loggedIn])
+
   return (
-    <BrowserRouter>
-      <FlashMessages messages={flashMessages} />
-      <Header loggedIn={loggedIn} setLoggedIn={setLoggedIn} />
-      <Switch>
-        <Route path="/" exact>
-          {loggedIn ? <Home /> : <HomeGuest />}
-        </Route>
-        <Route path="/create-post">
-          <CreatePost addFlashMessage={addFlashMessage} />
-        </Route>
-        <Route path="/post/:id">
-          <ViewSinglePost />
-        </Route>
-        <Route path="/about-us" exact>
-          <About />
-        </Route>
-        <Route path="/terms" exact>
-          <Terms />
-        </Route>
-      </Switch>
-      <Footer />
-    </BrowserRouter>
+    <StateContext.Provider value={state}>
+      <DispatchContext.Provider value={dispatch}>
+        <BrowserRouter>
+          <FlashMessages messages={state.flashMessages} />
+          <Header />
+          <Switch>
+            <Route path="/" exact>
+              {state.loggedIn ? <Home /> : <HomeGuest />}
+            </Route>
+            <Route path="/create-post">
+              <CreatePost />
+            </Route>
+            <Route path="/post/:id">
+              <ViewSinglePost />
+            </Route>
+            <Route path="/about-us" exact>
+              <About />
+            </Route>
+            <Route path="/terms" exact>
+              <Terms />
+            </Route>
+          </Switch>
+          <Footer />
+        </BrowserRouter>
+      </DispatchContext.Provider>
+    </StateContext.Provider>
   )
 }
 
