@@ -17,15 +17,21 @@ function Profile() {
   })
 
   useEffect(() => {
+    const ourRequest = Axios.CancelToken.source()
+
     async function fetchData() {
       try {
-        const response = await Axios.post(`/profile/${username}/posts`, { token: appState.user.token })
+        const response = await Axios.post(`/profile/${username}/posts`, { token: appState.user.token }, { cancelToken: ourRequest.token })
         setProfileData(response.data)
       } catch (e) {
-        console.log(e)
+        console.log("There was a problem or the request might be cancelled")
       }
     }
-    fetchData
+    fetchData()
+    // cancel axios request when the component unmounted or stop being rendered
+    return () => {
+      ourRequest.cancel()
+    }
   }, [])
 
   return (
