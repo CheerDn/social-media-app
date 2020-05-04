@@ -5,7 +5,7 @@ const Page = props => {
   useEffect(() => {
     document.title = `${props.title} | SocialMediaApp`
     window.scroll(0, 0)
-  }, [])
+  }, [props.title])
 
   return <Container wide={props.wide}>{props.children}</Container>
 }

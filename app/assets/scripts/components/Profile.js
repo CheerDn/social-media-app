@@ -19,7 +19,7 @@ function Profile() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await Axios.post(`/profile/${username}`, { token: appState.user.token })
+        const response = await Axios.post(`/profile/${username}/posts`, { token: appState.user.token })
         setProfileData(response.data)
       } catch (e) {
         console.log(e)
