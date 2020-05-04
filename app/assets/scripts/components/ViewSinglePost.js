@@ -1,9 +1,9 @@
 import React, { useEffect, useContext, useState } from "react"
 import Page from "./Page"
-import StateContext from "../StateContext"
 import { useParams, Link } from "react-router-dom"
 import Axios from "axios"
 import LoadingIcon from "./LoadingIcon"
+import ReactMarkdown from "react-markdown"
 
 function ViewSinglePost() {
   const [isLoading, setIsLoading] = useState(true)
@@ -60,7 +60,9 @@ function ViewSinglePost() {
         Posted by <Link to={`/profile/${post.author.username}`}>{post.author.username}</Link> on {dateFormatted}
       </p>
 
-      <div className="body-content">{post.body}</div>
+      <div className="body-content">
+        <ReactMarkdown source={post.body} allowedTypes={["paragraph", "strong", "emphasis", "text", "heading", "list", "listItem"]} />
+      </div>
     </Page>
   )
 }
