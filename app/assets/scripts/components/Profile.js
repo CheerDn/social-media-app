@@ -3,15 +3,14 @@ import Page from "./Page"
 import { useParams } from "react-router-dom"
 import Axios from "axios"
 import StateContext from "../StateContext"
-import PfofilePosts from "./ProfilePosts"
 import ProfilePosts from "./ProfilePosts"
 
 function Profile() {
   const { username } = useParams()
   const appState = useContext(StateContext)
   const [profileData, setProfileData] = useState({
-    profileUsername: "...",
-    profileAvatar: "...",
+    profileUsername: "",
+    profileAvatar: "https://gravatar.com/avatar/placeholder?s=128",
     isFollowing: false,
     counts: { postCount: 17, followerCount: 10, followingCount: 3 }
   })
@@ -21,7 +20,7 @@ function Profile() {
 
     async function fetchData() {
       try {
-        const response = await Axios.post(`/profile/${username}/posts`, { token: appState.user.token }, { cancelToken: ourRequest.token })
+        const response = await Axios.post(`/profile/${username}`, { token: appState.user.token }, { cancelToken: ourRequest.token })
         setProfileData(response.data)
       } catch (e) {
         console.log("There was a problem or the request might be cancelled")

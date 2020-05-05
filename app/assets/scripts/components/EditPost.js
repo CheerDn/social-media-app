@@ -1,11 +1,12 @@
 import React, { useEffect, useContext, useState } from "react"
 import { useImmerReducer } from "use-immer"
 import Page from "./Page"
-import { useParams, Link } from "react-router-dom"
+import { useParams, Link, Redirect } from "react-router-dom"
 import Axios from "axios"
 import StateContext from "../StateContext"
 import DispatchContext from "../DispatchContext"
 import LoadingIcon from "./LoadingIcon"
+import NotFound from "./NotFound"
 
 function ViewSinglePost() {
   const appState = useContext(StateContext)
@@ -24,7 +25,9 @@ function ViewSinglePost() {
     isFetching: true,
     isSaving: false,
     id: useParams().id,
-    sendCount: 0
+    sendCount: 0,
+    notFound: false,
+    permissionProblem: false
   }
 
   function ourReducer(draft, action) {
@@ -33,6 +36,8 @@ function ViewSinglePost() {
         draft.title.value = action.value.title
         draft.body.value = action.value.body
         draft.isFetching = false
+        //if user enter an URL that link to others post
+        if (appState.user.username != action.value.author.username) draft.permissionProblem = true
         return
       case "titleChange":
         draft.title.hasErrors = false
@@ -69,6 +74,9 @@ function ViewSinglePost() {
           draft.body.hasErrors = false
         }
         return
+      case "notFound":
+        draft.notFound = true
+        return
     }
   }
 
@@ -87,7 +95,11 @@ function ViewSinglePost() {
     async function fetchPost() {
       try {
         const response = await Axios.get(`/post/${state.id}`, { cancelToken: ourRequest.token })
-        dispatch({ type: "fetchComplete", value: response.data })
+        if (response.data) {
+          dispatch({ type: "fetchComplete", value: response.data })
+        } else {
+          dispatch({ type: "notFound" })
+        }
       } catch (e) {
         console.log("There was a problem or the request might be cancelled")
       }
@@ -122,6 +134,15 @@ function ViewSinglePost() {
     }
   }, [state.sendCount])
 
+  if (state.notFound) {
+    return <NotFound />
+  }
+
+  if (state.permissionProblem) {
+    appDispatch({ type: flashMessage, value: " You do not have permission to edit that post" })
+    return <Redirect to="/" />
+  }
+
   if (state.isFetching)
     return (
       <Page title="...">
@@ -131,7 +152,10 @@ function ViewSinglePost() {
 
   return (
     <Page title="Edit Post">
-      <form onSubmit={handleSubmit}>
+      <Link to={`/post/${state.id}`} className="small font-weight-bold">
+        &laquo; Back to post
+      </Link>
+      <form onSubmit={handleSubmit} className="mt-3">
         <div className="form-group">
           <label htmlFor="post-title" className="text-muted mb-1">
             <small>Title</small>
