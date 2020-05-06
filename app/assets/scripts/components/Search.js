@@ -1,6 +1,7 @@
 import React, { useEffect, useContext } from "react"
 import DispatchContext from "../DispatchContext"
 import { useImmer } from "use-immer"
+import Axios from "axios"
 
 function Search() {
   const appDispatch = useContext(DispatchContext)
@@ -17,21 +18,45 @@ function Search() {
     return () => document.removeEventListener("keyup", searchKeyPressHandler)
   }, [])
 
-  //check search term
+  //check search term and set delay
   useEffect(() => {
-    const delay = setTimeout(() => {
-      //inner curly bracket is necessary here, or it will return what you list in side
+    if (state.searchTerm.trim()) {
       setState(draft => {
-        draft.requestCount++
+        draft.show = "loading"
+        console.log(state.show)
       })
-    }, 3000)
-
-    //cleanup function will run before 1.component unmounted 2.useEffect run again
-    return () => clearTimeout(delay)
+      const delay = setTimeout(() => {
+        //inner curly bracket is necessary here, or it will return what you list in side
+        setState(draft => {
+          draft.requestCount++
+        })
+      }, 3000)
+      //cleanup function will run before 1.component unmounted 2.useEffect run again
+      return () => clearTimeout(delay)
+    } else {
+      setState(draft => {
+        draft.show = "neither"
+      })
+    }
   }, [state.searchTerm])
 
+  //send Axios request here
   useEffect(() => {
     if (state.requestCount) {
+      const ourRequest = Axios.CancelToken.source()
+      async function fetchResults() {
+        try {
+          const response = await Axios.post("/search", { searchTerm: state.searchTerm }, { cancelToken: ourRequest.token })
+          setState(draft => {
+            draft.result = response.data
+            draft.show = "results"
+          })
+        } catch (e) {
+          console.log("There was a problem or the request might be cancelled")
+        }
+      }
+      fetchResults()
+      return () => ourRequest.cancel()
     }
   }, [state.requestCount])
 
@@ -64,7 +89,8 @@ function Search() {
 
       <div className="search-overlay-bottom">
         <div className="container container--narrow py-3">
-          <div className="live-search-results live-search-results--visible">
+          <div className={"circle-loader " + (state.show == "loading?" ? "circle-loader--visible" : "")}></div>
+          <div className={"live-search-results " + (state.show == "results" ? "live-search-results--visible" : "")}>
             <div className="list-group shadow-sm">
               <div className="list-group-item active">
                 <strong>Search Results</strong> (3 items found)
