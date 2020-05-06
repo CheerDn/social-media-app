@@ -33,7 +33,7 @@ function ViewSinglePost(props) {
     return () => {
       ourRequest.cancel()
     }
-  }, [])
+  }, [id])
 
   //loading finished and get undefined
   if (!isLoading && !post) {
@@ -69,7 +69,9 @@ function ViewSinglePost(props) {
           // 2. redirect back to the current user's profile
           props.history.push(`/profile/${appState.user.username}`)
         }
-      } catch (e) {}
+      } catch (e) {
+        console.log("There was a problem or the request might be cancelled")
+      }
     }
   }
 
