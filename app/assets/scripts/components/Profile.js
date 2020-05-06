@@ -124,7 +124,7 @@ function Profile() {
           3. User is profile owner him/herself.
           4. The page is still waiting for profile data.
         */}
-        {appState.loggedIn && !state.profileData.isFollowing && appState.user.username != state.profileData && state.profileData.profileUsername != "..." && (
+        {appState.loggedIn && !state.profileData.isFollowing && appState.user.username != state.profileData.profileUsername && state.profileData.profileUsername != "..." && (
           <button onClick={startFollowing} disabled={state.followActionLoading} className="btn btn-primary btn-sm ml-2">
             Follow <i className="fas fa-user-plus"></i>
           </button>
@@ -133,7 +133,7 @@ function Profile() {
           Below is the unfollow button. 
           Same logic except "state.profileData.isFollowing" part.
         */}
-        {appState.loggedIn && state.profileData.isFollowing && appState.user.username != state.profileData && state.profileData.profileUsername != "..." && (
+        {appState.loggedIn && state.profileData.isFollowing && appState.user.username != state.profileData.profileUsername && state.profileData.profileUsername != "..." && (
           <button onClick={stopFollowing} disabled={state.followActionLoading} className="btn btn-danger btn-sm ml-2">
             Stop Following <i className="fas fa-user-times"></i>
           </button>
