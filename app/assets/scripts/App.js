@@ -24,6 +24,7 @@ import Profile from "./components/Profile"
 import EditPost from "./components/EditPost"
 import NotFound from "./components/NotFound"
 import Search from "./components/Search"
+import Chat from "./components/Chat"
 
 function App() {
   const initialState = {
@@ -34,7 +35,8 @@ function App() {
       username: localStorage.getItem("socialmediaappUsername"),
       avatar: localStorage.getItem("socialmediaappAvatar")
     },
-    isSearchOpen: false
+    isSearchOpen: false,
+    isChatOpen: false
   }
 
   function ourReducer(draft, action) {
@@ -54,6 +56,14 @@ function App() {
         return
       case "closeSearch":
         draft.isSearchOpen = false
+        return
+      // for  chat icon in header
+      case "toggleChat":
+        draft.isChatOpen = !draft.isChatOpen
+        return
+      // for close icon in chatroom
+      case "closeChat":
+        draft.isChatOpen = false
         return
     }
   }
@@ -107,6 +117,7 @@ function App() {
           <CSSTransition timeout={330} in={state.isSearchOpen} classNames="search-overlay" unmountOnExit>
             <Search />
           </CSSTransition>
+          <Chat />
           <Footer />
         </BrowserRouter>
       </DispatchContext.Provider>
