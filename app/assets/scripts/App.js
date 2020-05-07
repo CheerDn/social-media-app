@@ -36,7 +36,8 @@ function App() {
       avatar: localStorage.getItem("socialmediaappAvatar")
     },
     isSearchOpen: false,
-    isChatOpen: false
+    isChatOpen: false,
+    unreadChatCount: 0
   }
 
   function ourReducer(draft, action) {
@@ -64,6 +65,12 @@ function App() {
       // for close icon in chatroom
       case "closeChat":
         draft.isChatOpen = false
+        return
+      case "incrementUnreadChatCount":
+        draft.unreadChatCount++
+        return
+      case "clearUnreadChatCount":
+        draft.unreadChatCount = 0
         return
     }
   }
