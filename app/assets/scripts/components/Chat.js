@@ -3,10 +3,11 @@ import StateContext from "../StateContext"
 import DispatchContext from "../DispatchContext"
 import { useImmer } from "use-immer"
 import io from "socket.io-client"
-const socket = io("http://localhost:8080")
+
 import { Link } from "react-router-dom"
 
 function Chat() {
+  const socket = useRef(null)
   const chatField = useRef(null)
   const chatLog = useRef(null)
   const appState = useContext(StateContext)
@@ -27,11 +28,13 @@ function Chat() {
 
   // listen to new messages
   useEffect(() => {
+    socket.current = io("http://localhost:8080")
     socket.on("chatFromServer", message => {
       setState(draft => {
         draft.chatMessages.push(message)
       })
     })
+    return () => socket.disconnect()
   }, [])
 
   // automatically scroll to bottom when there is a new message
