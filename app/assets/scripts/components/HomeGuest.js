@@ -1,20 +1,203 @@
-import React, { useState } from "react"
+import React, { useState, useEffect, usecontext, useContext } from "react"
 import Page from "./Page"
 import Axios from "axios"
+import { useImmerReducer } from "use-immer"
+import { CSSTransition } from "react-transition-group"
+import DispatchContext from "../DispatchContext"
 
-const HomeGuest = () => {
-  const [username, setUsername] = useState()
-  const [email, setEmail] = useState()
-  const [password, setPassword] = useState()
+function HomeGuest() {
+  const appDispatch = useContext(DispatchContext)
 
-  const handleSubmit = async e => {
-    e.preventDefault()
-    try {
-      await Axios.post("/register", { username, email, password })
-      console.log("success")
-    } catch (e) {
-      console.log("error")
+  const initialState = {
+    username: {
+      value: "",
+      hasErrors: false,
+      message: "",
+      isUnique: "",
+      checkCount: 0
+    },
+    email: {
+      value: "",
+      hasErrors: false,
+      message: "",
+      isUnique: "",
+      checkCount: 0
+    },
+    password: {
+      value: "",
+      hasErrors: false,
+      message: "",
+      checkCount: 0
+    },
+    submitCount: 0
+  }
+
+  function ourReducer(draft, action) {
+    switch (action.type) {
+      case "usernameImmediately":
+        draft.username.hasErrors = false
+        draft.username.value = action.value
+        if (draft.username.value.length > 30) {
+          draft.username.hasErrors = true
+          draft.username.message = "Username cannot exceed 30 characters."
+        }
+        // valid only for alphanumeric characters
+        if (draft.username.value && !/^([a-zA-Z0-9]+)$/.test(draft.username.value)) {
+          draft.username.hasErrors = true
+          draft.username.message = "Username can only contains letters and numbers."
+        }
+        return
+      case "usernameAfterDelay":
+        if (draft.username.value.length < 3) {
+          draft.username.hasErrors = true
+          draft.username.message = "Username must at least 3 characters."
+        }
+        if (!draft.hasErrors && !action.noRequest) {
+          draft.username.checkCount++
+        }
+        return
+      case "usernameDuplicate":
+        if (action.value) {
+          draft.username.hasErrors = true
+          draft.username.isUnique = false
+          draft.username.message = "That username is already taken."
+        } else {
+          draft.username.isUnique = true
+        }
+        return
+      case "emailImmediately":
+        draft.email.hasErrors = false
+        draft.email.value = action.value
+        return
+      case "emailAfterDelay":
+        // simple rule validation
+        if (!/^\S+@\S+$/.test(draft.email.value)) {
+          draft.email.hasErrors = true
+          draft.email.message = "You must provide a valid email address."
+        }
+        if (!draft.email.hasErrors && !action.noRequest) {
+          draft.email.checkCount++
+        }
+        return
+      case "emailDuplicate":
+        if (action.value) {
+          draft.email.hasErrors = true
+          draft.email.isUnique = false
+          draft.email.message = "That email is already be used."
+        } else {
+          draft.email.isUnique = true
+        }
+        return
+      case "passwordImmediately":
+        draft.password.hasErrors = false
+        draft.password.value = action.value
+        if (draft.password.value.length > 50) {
+          draft.password.hasErrors = true
+          draft.password.message = "Password cannot exceed 50 characters."
+        }
+        return
+      case "passwordAfterDelay":
+        if (draft.password.value.length < 12) {
+          draft.password.hasErrors = true
+          draft.password.message = "Password must be at least 12 characters."
+        }
+        return
+      case "submitForm":
+        if (!draft.username.hasErrors && draft.username.isUnique && !draft.email.hasErrors && draft.email.isUnique && !draft.password.hasErrors) {
+          draft.submitCount++
+        }
+        return
     }
+  }
+
+  const [state, dispatch] = useImmerReducer(ourReducer, initialState)
+
+  // set delay to check username
+  useEffect(() => {
+    if (state.username.value) {
+      const delay = setTimeout(() => dispatch({ type: "usernameAfterDelay" }), 800)
+      return () => clearTimeout(delay)
+    }
+  }, [state.username.value])
+
+  // set delay to check email
+  useEffect(() => {
+    if (state.email.value) {
+      const delay = setTimeout(() => dispatch({ type: "emailAfterDelay" }), 800)
+      return () => clearTimeout(delay)
+    }
+  }, [state.email.value])
+
+  // set delay to check password
+  useEffect(() => {
+    if (state.password.value) {
+      const delay = setTimeout(() => dispatch({ type: "passwordAfterDelay" }), 800)
+      return () => clearTimeout(delay)
+    }
+  }, [state.password.value])
+
+  // Username: send request and check uniqueness
+  useEffect(() => {
+    if (state.username.checkCount) {
+      const ourRequest = Axios.CancelToken.source()
+      async function fetchResults() {
+        try {
+          const response = await Axios.post("/doesUsernameExist", { username: state.username.value }, { cancelToken: ourRequest.token })
+          dispatch({ type: "usernameDuplicate", value: response.data })
+        } catch (e) {
+          console.log("There was a problem or the request might be cancelled")
+        }
+      }
+      fetchResults()
+      return () => ourRequest.cancel()
+    }
+  }, [state.username.checkCount])
+
+  // Email: send request and check uniqueness
+  useEffect(() => {
+    if (state.email.checkCount) {
+      const ourRequest = Axios.CancelToken.source()
+      async function fetchResults() {
+        try {
+          const response = await Axios.post("/doesEmailExist", { email: state.email.value }, { cancelToken: ourRequest.token })
+          dispatch({ type: "emailDuplicate", value: response.data })
+        } catch (e) {
+          console.log("There was a problem or the request might be cancelled")
+        }
+      }
+      fetchResults()
+      return () => ourRequest.cancel()
+    }
+  }, [state.email.checkCount])
+
+  // Submit
+  useEffect(() => {
+    if (state.submitCount) {
+      const ourRequest = Axios.CancelToken.source()
+      async function fetchResults() {
+        try {
+          const response = await Axios.post("/register", { username: state.username.value, email: state.email.value, password: state.password.value }, { cancelToken: ourRequest.token })
+          appDispatch({ type: "login", data: response.data })
+          appDispatch({ type: "flashMessage", value: "Congrats! Welcome to your new account." })
+        } catch (e) {
+          console.log("There was a problem or the request might be cancelled")
+        }
+      }
+      fetchResults()
+      return () => ourRequest.cancel()
+    }
+  }, [state.submitCount])
+
+  function handleSubmit(e) {
+    e.preventDefault()
+    // to handle error message properly
+    dispatch({ type: "usernameImmediately", value: state.username.value })
+    dispatch({ type: "usernameAfterDelay", value: state.username.value, noRequest: true })
+    dispatch({ type: "emailImmediately", value: state.email.value })
+    dispatch({ type: "emailAfterDelay", value: state.email.value, noRequest: true })
+    dispatch({ type: "passwordImmediately", value: state.password.value })
+    dispatch({ type: "passwordAfterDelay", value: state.password.value, noRequest: true })
+    dispatch({ type: "submitForm" })
   }
 
   return (
@@ -31,19 +214,28 @@ const HomeGuest = () => {
                 <label htmlFor="username-register" className="text-muted mb-1">
                   <small>Username</small>
                 </label>
-                <input onChange={e => setUsername(e.target.value)} id="username-register" name="username" className="form-control" type="text" placeholder="Pick a username" autoComplete="off" />
+                <input onChange={e => dispatch({ type: "usernameImmediately", value: e.target.value })} id="username-register" name="username" className="form-control" type="text" placeholder="Pick a username" autoComplete="off" />
+                <CSSTransition in={state.username.hasErrors} timeout={330} classNames="liveValidateMessage" unmountOnExit>
+                  <div className="alert alert-danger small liveValidateMessage">{state.username.message}</div>
+                </CSSTransition>
               </div>
               <div className="form-group">
                 <label htmlFor="email-register" className="text-muted mb-1">
                   <small>Email</small>
                 </label>
-                <input onChange={e => setEmail(e.target.value)} id="email-register" name="email" className="form-control" type="text" placeholder="you@example.com" autoComplete="off" />
+                <input onChange={e => dispatch({ type: "emailImmediately", value: e.target.value })} id="email-register" name="email" className="form-control" type="text" placeholder="you@example.com" autoComplete="off" />
+                <CSSTransition in={state.email.hasErrors} timeout={330} classNames="liveValidateMessage" unmountOnExit>
+                  <div className="alert alert-danger small liveValidateMessage">{state.email.message}</div>
+                </CSSTransition>
               </div>
               <div className="form-group">
                 <label htmlFor="password-register" className="text-muted mb-1">
                   <small>Password</small>
                 </label>
-                <input onChange={e => setPassword(e.target.value)} id="password-register" name="password" className="form-control" type="password" placeholder="Create a password" />
+                <input onChange={e => dispatch({ type: "passwordImmediately", value: e.target.value })} id="password-register" name="password" className="form-control" type="password" placeholder="Create a password" />
+                <CSSTransition in={state.password.hasErrors} timeout={330} classNames="liveValidateMessage" unmountOnExit>
+                  <div className="alert alert-danger small liveValidateMessage">{state.password.message}</div>
+                </CSSTransition>
               </div>
               <button type="submit" className="py-3 mt-4 btn btn-lg btn-success btn-block">
                 Sign up for ComplexApp
