@@ -2,11 +2,16 @@ import React, { useEffect, useContext, useRef } from "react"
 import StateContext from "../StateContext"
 import DispatchContext from "../DispatchContext"
 import { useImmer } from "use-immer"
+//const socket = io("http://localhost:8080")
 import io from "socket.io-client"
 
 import { Link } from "react-router-dom"
 
 function Chat() {
+  /* useRef for socket and declare only in useEffect to make sure
+     user will disconnect to chat server after logging out, and 
+     will connect after logging in again.
+  */
   const socket = useRef(null)
   const chatField = useRef(null)
   const chatLog = useRef(null)
@@ -29,12 +34,12 @@ function Chat() {
   // listen to new messages
   useEffect(() => {
     socket.current = io("http://localhost:8080")
-    socket.on("chatFromServer", message => {
+    socket.current.on("chatFromServer", message => {
       setState(draft => {
         draft.chatMessages.push(message)
       })
     })
-    return () => socket.disconnect()
+    return () => socket.current.disconnect()
   }, [])
 
   // automatically scroll to bottom when there is a new message
@@ -57,7 +62,7 @@ function Chat() {
   function handleSubmit(e) {
     e.preventDefault()
     // send message to chat server
-    socket.emit("chatFromBrowser", { message: state.fieldValue, token: appState.user.token })
+    socket.current.emit("chatFromBrowser", { message: state.fieldValue, token: appState.user.token })
     setState(draft => {
       // Add message to state collection of messages
       draft.chatMessages.push({ message: draft.fieldValue, username: appState.user.username, avatar: appState.user.avatar })
