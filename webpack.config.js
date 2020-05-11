@@ -13,7 +13,7 @@ const postCSSPlugins = [require("autoprefixer")]
 class RunAfterCompile {
   apply(compiler) {
     compiler.hooks.done.tap("Copy images", function () {
-      fse.copySync("./app/assets/images", "./dist/assets/images")
+      fse.copySync("./app/assets", "./dist/assets")
     })
   }
 }
