@@ -57,7 +57,7 @@ let config = {
   }
 }
 
-if (currentTask == "dev") {
+if (currentTask == "dev" || currentTask == "webpackDev") {
   cssConfig.use.unshift("style-loader")
   config.output = {
     publicPath: "/",
@@ -77,7 +77,7 @@ if (currentTask == "dev") {
   }
   config.mode = "development"
 }
-if (currentTask == "build") {
+if (currentTask == "build" || currentTask == "webpackBuild") {
   cssConfig.use.unshift(MiniCssExtractPlugin.loader)
   postCSSPlugins.push(require("cssnano"))
   config.output = {

@@ -33,7 +33,7 @@ function Chat() {
 
   // listen to new messages
   useEffect(() => {
-    socket.current = io("http://localhost:8080")
+    socket.current = io(process.env.BACKENDURL || "https://socialmediaappbycheer.herokuapp.com/")
     socket.current.on("chatFromServer", message => {
       setState(draft => {
         draft.chatMessages.push(message)
