@@ -1,13 +1,11 @@
-/**
- * This is a Sass version and leverage little PostCss plugins.
- */
-
 const currentTask = process.env.npm_lifecycle_event
 const path = require("path")
 const { CleanWebpackPlugin } = require("clean-webpack-plugin")
 const MiniCssExtractPlugin = require("mini-css-extract-plugin")
 const HtmlWebpackPlugin = require("html-webpack-plugin")
 const fse = require("fs-extra")
+const Dotenv = require("dotenv-webpack")
+const HtmlWebpackHarddiskPlugin = require("html-webpack-harddisk-plugin")
 
 const postCSSPlugins = [require("autoprefixer")]
 
@@ -15,7 +13,7 @@ const postCSSPlugins = [require("autoprefixer")]
 class RunAfterCompile {
   apply(compiler) {
     compiler.hooks.done.tap("Copy images", function () {
-      fse.copySync("./app/assets/images", "./docs/assets/images")
+      fse.copySync("./app/assets/images", "./dist/assets/images")
     })
   }
 }
@@ -37,7 +35,8 @@ let pages = fse
       template: `./app/${page}`
     })
   })
-
+pages.unshift(new Dotenv())
+pages.push(new HtmlWebpackHarddiskPlugin())
 let config = {
   entry: "./app/assets/scripts/App.js",
   plugins: pages,
@@ -84,7 +83,7 @@ if (currentTask == "build") {
   config.output = {
     filename: "[name].[chunkhash].js",
     chunkFilename: "[name].[chunkhash].js",
-    path: path.resolve(__dirname, "docs")
+    path: path.resolve(__dirname, "dist")
   }
   config.mode = "production"
   config.optimization = {
