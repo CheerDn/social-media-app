@@ -1,0 +1,7 @@
+.container--narrow {
+  max-width: 732px;
+}
+
+.custom-tooltip {
+  padding: 8px 10px !important;
+}

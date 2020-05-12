@@ -144,9 +144,3 @@
     transform: translateX(-50%) scale(1.2);
   }
 }
-
-.small-header-avatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 16px;
-}
