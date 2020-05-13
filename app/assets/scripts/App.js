@@ -1,6 +1,6 @@
 import "../styles/styles.css"
 
-import React, { useState, useReducer, useEffect, Suspense } from "react"
+import React, { useEffect, Suspense } from "react"
 import ReactDOM from "react-dom"
 import { useImmerReducer } from "use-immer"
 import { BrowserRouter, Switch, Route } from "react-router-dom"
