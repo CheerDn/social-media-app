@@ -119,8 +119,8 @@ function Profile() {
       <h2>
         <img className="avatar-small" src={state.profileData.profileAvatar} /> {state.profileData.profileUsername}
         {/*
-          Below is the follow button.
-          Should not display "follow" button in the following cases :
+          Below is the "follow button".
+          Should not display "follow button" in the following cases :
           1. User did not log in.
           2. User followed the profile owner.
           3. User is profile owner him/herself.
@@ -132,7 +132,7 @@ function Profile() {
           </button>
         )}
         {/*
-          Below is the unfollow button. 
+          Below is the "unfollow button". 
           Same logic except "state.profileData.isFollowing" part.
         */}
         {appState.loggedIn && state.profileData.isFollowing && appState.user.username != state.profileData.profileUsername && state.profileData.profileUsername != "..." && (
