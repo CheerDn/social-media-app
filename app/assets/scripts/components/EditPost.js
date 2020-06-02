@@ -37,7 +37,7 @@ function ViewSinglePost() {
         draft.body.value = action.value.body
         draft.isFetching = false
         //if user enter an URL that link to others post
-        if (appState.user.username != action.value.author.username) draft.permissionProblem = true
+        if (appState.user.username != action.value.author.username || !appState.loggedIn) draft.permissionProblem = true
         return
       case "titleChange":
         draft.title.hasErrors = false
@@ -139,7 +139,7 @@ function ViewSinglePost() {
   }
 
   if (state.permissionProblem) {
-    appDispatch({ type: flashMessage, value: " You do not have permission to edit that post" })
+    appDispatch({ type: "flashMessage", value: " You do not have permission to edit that post" })
     return <Redirect to="/" />
   }
 
