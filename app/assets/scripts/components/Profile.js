@@ -7,6 +7,7 @@ import ProfilePosts from "./ProfilePosts"
 import { useImmer } from "use-immer"
 import ProfileFollower from "./ProfileFollower"
 import ProfileFollowing from "./ProfileFollowing"
+import NotFound from "./NotFound"
 
 function Profile() {
   const { username } = useParams()
@@ -20,7 +21,8 @@ function Profile() {
       profileAvatar: "https://gravatar.com/avatar/placeholder?s=128",
       isFollowing: false,
       counts: { postCount: 0, followerCount: 0, followingCount: 0 }
-    }
+    },
+    notFound: false
   })
 
   //-------------------  get user profile  -------------------------
@@ -29,9 +31,15 @@ function Profile() {
     async function fetchData() {
       try {
         const response = await Axios.post(`/profile/${username}`, { token: appState.user.token }, { cancelToken: ourRequest.token })
-        setState(draft => {
-          draft.profileData = response.data
-        })
+        if (response.data) {
+          setState(draft => {
+            draft.profileData = response.data
+          })
+        } else {
+          setState(draft => {
+            draft.notFound = true
+          })
+        }
       } catch (e) {
         console.log("There was a problem or the request might be cancelled")
       }
@@ -112,6 +120,10 @@ function Profile() {
     setState(draft => {
       draft.stopFollowingRequestCount++
     })
+  }
+
+  if (state.notFound) {
+    return <NotFound />
   }
 
   return (
