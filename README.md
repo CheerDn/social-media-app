@@ -5,7 +5,7 @@ Website: https://socialmediaappbycheer.netlify.app
 - Live Chat with other online users.
 - Support text with markdown language.
 
-### Implementtation Summary:
+### Implementation Summary:
 - Built by React using **Hook**, **Context with Immer**, and **React Router**. 
 - Parts of codes are lazy loaded and RWD is via Bootstrap. 
 - Developed without create-react-app.
