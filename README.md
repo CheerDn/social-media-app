@@ -1,4 +1,4 @@
-# Pure Texted Social Media App
+# Pure Text-based Social Media App
 Website: https://socialmediaappbycheer.netlify.app
 ### UI Features:
 - Registration validation, logging in/out and following/unfollowing users.
