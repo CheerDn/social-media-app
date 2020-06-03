@@ -45,14 +45,3 @@
     opacity: 1;
   }
 }
-
-@-webkit-keyframes opacitychange {
-  0%,
-  100% {
-    opacity: 0;
-  }
-
-  60% {
-    opacity: 1;
-  }
-}
