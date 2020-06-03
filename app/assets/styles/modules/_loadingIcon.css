@@ -22,27 +22,16 @@
 }
 
 .dots-loading::before {
-  -moz-animation: opacitychange 1s ease-in-out infinite;
-  -webkit-animation: opacitychange 1s ease-in-out infinite;
-  -o-animation: opacitychange 1s ease-in-out infinite;
   animation: opacitychange 1s ease-in-out infinite;
 }
 
 .dots-loading div {
-  -moz-animation: opacitychange 1s ease-in-out 0.33s infinite;
-  -webkit-animation: opacitychange 1s ease-in-out 0.33s infinite;
-  -o-animation: opacitychange 1s ease-in-out 0.33s infinite;
   animation: opacitychange 1s ease-in-out 0.33s infinite;
-  -webkit-animation-fill-mode: infinite;
   animation-fill-mode: infinite;
 }
 
 .dots-loading::after {
-  -moz-animation: opacitychange 1s ease-in-out 0.66s infinite;
-  -webkit-animation: opacitychange 1s ease-in-out 0.66s infinite;
-  -o-animation: opacitychange 1s ease-in-out 0.66s infinite;
   animation: opacitychange 1s ease-in-out 0.66s infinite;
-  -webkit-animation-fill-mode: infinite;
   animation-fill-mode: infinite;
 }
 
