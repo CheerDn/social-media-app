@@ -2,7 +2,8 @@
   background-color: #292929;
 }
 
-.header-search-icon {
+.header-search-icon,
+.header-plaza-icon {
   position: relative;
   top: 3px;
 }

@@ -22,6 +22,10 @@ function HeaderLoggedIn() {
 
   return (
     <div className="flex-row my-3 my-md-0">
+      <Link data-for="plaza" data-tip="Plaza" to={"/plaza"} className="mr-2 text-white header-plaza-icon">
+        <i className="far fa-handshake"></i>
+      </Link>
+      <ReactTooltip place="bottom" id="plaza" className="custom-tooltip" />{" "}
       <a data-for="search" data-tip="Search" onClick={handleSearchIcon} href="#" className="text-white mr-2 header-search-icon">
         <i className="fas fa-search"></i>
       </a>

@@ -26,6 +26,7 @@ import NotFound from "./components/NotFound"
 const Search = React.lazy(() => import("./components/Search"))
 const Chat = React.lazy(() => import("./components/Chat"))
 import LoadingIcon from "./components/LoadingIcon"
+import Plaza from "./components/Plaza"
 
 function App() {
   const initialState = {
@@ -140,6 +141,9 @@ function App() {
               </Route>
               <Route path="/terms" exact>
                 <Terms />
+              </Route>
+              <Route path="/plaza" exact>
+                <Plaza />
               </Route>
               <Route>
                 <NotFound />

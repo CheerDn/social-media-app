@@ -1,7 +1,9 @@
 body {
   font-family: "Public Sans", sans-serif;
 }
-
+a:hover {
+  text-decoration: none;
+}
 .display-3 {
   font-size: 4.2rem;
 }
