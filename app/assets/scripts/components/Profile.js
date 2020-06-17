@@ -176,6 +176,16 @@ function Profile() {
           <ProfileFollowing />
         </Route>
       </Switch>
+
+      {appState.user.username == username && (
+        <div className="ml-2 mt-2 text-muted">
+          You can set up your photo icon on{" "}
+          <a href="https://en.gravatar.com/" target="_blank">
+            Gravatar
+          </a>
+          .
+        </div>
+      )}
     </Page>
   )
 }
