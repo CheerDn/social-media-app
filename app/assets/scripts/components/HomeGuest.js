@@ -238,7 +238,7 @@ function HomeGuest() {
                 </CSSTransition>
               </div>
               <button type="submit" className="py-3 mt-4 btn btn-lg btn-success btn-block">
-                Sign up for ComplexApp
+                Sign Up
               </button>
             </form>
           </div>
