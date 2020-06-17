@@ -1,7 +1,7 @@
 import React, { useEffect, useContext, useState } from "react"
 import { useImmerReducer } from "use-immer"
 import Page from "./Page"
-import { useParams, Link, Redirect } from "react-router-dom"
+import { useParams, Link, Redirect, useHistory } from "react-router-dom"
 import Axios from "axios"
 import StateContext from "../StateContext"
 import DispatchContext from "../DispatchContext"
@@ -11,6 +11,7 @@ import NotFound from "./NotFound"
 function ViewSinglePost() {
   const appState = useContext(StateContext)
   const appDispatch = useContext(DispatchContext)
+  let history = useHistory()
   const originalState = {
     title: {
       value: "",
@@ -48,7 +49,7 @@ function ViewSinglePost() {
         draft.body.value = action.value
         return
       case "submitRequest":
-        if (!draft.title.hasErrors && draft.body.hasErrors) {
+        if (!draft.title.hasErrors && !draft.body.hasErrors) {
           draft.sendCount++
         }
         return
@@ -121,6 +122,7 @@ function ViewSinglePost() {
           const response = await Axios.post(`/post/${state.id}/edit`, { title: state.title.value, body: state.body.value, token: appState.user.token }, { cancelToken: ourRequest.token })
           dispatch({ type: "saveRequestFinished" })
           appDispatch({ type: "flashMessage", value: "Post updated!" })
+          history.push(`/post/${state.id}`)
         } catch (e) {
           console.log(e)
           console.log("There was a problem or the request might be cancelled")
